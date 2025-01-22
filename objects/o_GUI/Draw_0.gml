@@ -1,0 +1,1 @@
+draw_text_transformed(420,250, (o_player).p_lives, 1, 1, 0)

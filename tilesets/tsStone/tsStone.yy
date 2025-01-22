@@ -13,7 +13,7 @@
     "TileSerialiseData":[],
   },
   "name":"tsStone",
-  "out_columns":9,
+  "out_columns":36,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -39,5 +39,5 @@
   "tileWidth":256,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":81,
+  "tile_count":1296,
 }

@@ -1,7 +1,24 @@
-rightKey = keyboard_check( vk_right );
-leftKey = keyboard_check( vk_left );
-jumpKeyPressed = keyboard_check_pressed( vk_space );
-jumpKey = keyboard_check( vk_space )
+var rightKey, leftKey, jumpKey, jumpKeyPressed
+ rightKey = keyboard_check( ord("D") ) + keyboard_check( vk_right );
+    rightKey = clamp(rightKey, 0, 1)
+    leftKey = keyboard_check( ord("A") ) + keyboard_check( vk_left );
+    leftKey = clamp(leftKey, 0, 1)
+
+    jumpKeyPressed = keyboard_check_pressed( vk_space );
+    jumpKey = keyboard_check( vk_space );
+    // jump buffering
+    if jumpKeyPressed
+    {
+        jumpKeyBufferTimer = bufferTime;
+    }
+    if jumpKeyBufferTimer > 0 
+    {
+        jumpKeyBuffered = 1;
+        jumpKeyBufferTimer--;
+    } else {
+        jumpKeyBuffered = 0;
+    }
+
 //x move
 //dir
 moveDir = rightKey - leftKey;
@@ -18,11 +35,9 @@ if moveDir < 0 {
 
 //get xspd
 xspd = moveDir * moveSpd;
-
 //x collision
 var _subPixel = .5;
-if place_meeting(x + xspd, y , o_solid)
-{
+if place_meeting(x + xspd, y , o_solid){
     //wall
     var _pixelCheck = _subPixel * sign(xspd);
     while !place_meeting( x + _pixelCheck, y, o_solid)
@@ -34,6 +49,7 @@ if place_meeting(x + xspd, y , o_solid)
     xspd = 0;
 }
 
+var dir
 //move
 x += xspd;
 
@@ -42,55 +58,62 @@ x += xspd;
     yspd += grav;
 
     //grav cap
-    //if y > termVel { yspd = termVel;};
-
-    // jump
-    if jumpKeyPressed  && place_meeting (x , y +1, o_solid)
+    if yspd > termVel { yspd = termVel;};
+	//reset jumpcount
+	  if onGround {
+        jumpCount = 0 ; 
+	//bug fix for when you try to jump but cant because of a collision and the game crashes
+        jumpHoldTimer = 0;
+    } else {
+        if jumpCount == 0 { jumpCount = 1};
+    }
+   // jump
+    if jumpKeyBuffered && jumpCount < jumpMax
     {
-        yspd = jspd;
+        //reset jump buffer
+        jumpKeyBuffered = false;
+        jumpKeyBufferTimer = 0;
+        jumpCount++;
+        jumpHoldTimer = jumpHoldFrames[jumpCount-1];
+    }
+    //cut of jump
+    if !jumpKey {
+         jumpHoldTimer = 0;
+    }
+    // jump hight based on key hold time
+    if jumpHoldTimer > 0 {
+        //set yspd to jspd each frame
+        yspd = jspd[jumpCount -1];
+        //count timer down
+        jumpHoldTimer--;
     }
 
-    //y collision
-    var _subPixel = .5;
-    if place_meeting( x, y +yspd, o_solid )
+   //y collision
+if place_meeting( x, y +yspd, o_solid )
+{
+    //floor
+    var _pixelCheck = _subPixel * sign(yspd);
+    while !place_meeting( x, y + _pixelCheck, o_solid)
     {
-        //floor
-        var _pixelCheck = _subPixel * sign(yspd);
-        while !place_meeting( x, y + _pixelCheck, o_solid)
-        {
-            y += _pixelCheck;
-        }
-
-        //reset y
-        yspd = 0;
+        y += _pixelCheck;
     }
 
+    //loss jump momentum when you hit your head
+    if yspd < 0 {
+        jumpHoldTimer = 0;
+    }
+    //reset y
+    yspd = 0;
+}
+    //check if on ground
+    if yspd >= 0 && place_meeting(x,y+1, o_solid) {
+        onGround = true;
+    } else {
+        onGround = false;
+    }
     //up
-    y += yspd;
-	
+    y += yspd; 
 
-//death
-if place_meeting(x,y, o_death){
-	game_restart()
-}
-	
-//level switch
-if place_meeting(x,y,o_level_switch) {
-	if room = Room1 {
-		room_goto(Room2) 
-		x = 70
-		y = 530
-	} else if room = Room2 and x<200 {
-		room_goto(Room1)
-		x = 1230
-		y = 230
-	} else if room=Room2 and x>600 {
-		room_goto(Room3)
-		x = 92
-		y = 530
-	} else if room = Room3 {
-		room_goto (Room2)
-		x = 1275
-		y = 350
-	}
-}
+
+
+

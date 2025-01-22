@@ -8,7 +8,7 @@
     "TileSerialiseData":[],
   },
   "name":"TileSet6",
-  "out_columns":72,
+  "out_columns":26,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -18,8 +18,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"sprTileset_Forest",
-    "path":"sprites/sprTileset_Forest/sprTileset_Forest.yy",
+    "name":"Sprite330",
+    "path":"sprites/Sprite330/Sprite330.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -31,8 +31,8 @@
   "tileHeight":32,
   "tilehsep":0,
   "tilevsep":0,
-  "tileWidth":32,
+  "tileWidth":1,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":5184,
+  "tile_count":128,
 }
